@@ -100,7 +100,7 @@ export const robot = (app: Probot) => {
               }
             }
             if(f.IGNORE_PATTERNS){
-              const ignorePatterns: string[] = f.IGNORE_PATTERNS.split(',');
+              const ignorePatterns: string[] = f.IGNORE_PATTERNS;
               if(ignorePatterns.some(pattern => new RegExp(pattern).test(file.filename))){
                 return false;
               }
