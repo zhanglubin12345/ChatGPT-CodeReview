@@ -84,11 +84,13 @@ export const robot = (app: Probot) => {
 
       let { files: changedFiles, commits } = data.data;
 
-      log.info("compareCommits, base:", context.payload.pull_request.base.sha, "head:", context.payload.pull_request.head.sha)
-      log.info("compareCommits.commits:", commits)
-      log.info("compareCommits.files", changedFiles)
+      log.debug("compareCommits, base:", context.payload.pull_request.base.sha, "head:", context.payload.pull_request.head.sha)
+      log.debug("compareCommits.commits:", commits)
+      log.debug("compareCommits.files", changedFiles)
+      log.info("context.payload.action", context.payload.action)
+      log.info("commits.length", commits.length)
 
-      if (context.payload.action === 'synchronize' && commits.length >= 2) {
+      if (context.payload.action === 'synchronize' && commits.length >= 1) {
         const {
           data: { files },
         } = await context.octokit.repos.compareCommits({
