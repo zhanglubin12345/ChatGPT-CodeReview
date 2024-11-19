@@ -90,7 +90,7 @@ export const robot = (app: Probot) => {
       log.info("context.payload.action", context.payload.action)
       log.info("commits.length", commits.length)
 
-      if (context.payload.action === 'synchronize' && commits.length >= 1) {
+      //if (context.payload.action === 'synchronize' && commits.length >= 1) {
         const {
           data: { files },
         } = await context.octokit.repos.compareCommits({
@@ -103,9 +103,8 @@ export const robot = (app: Probot) => {
         const ignoreList = (process.env.IGNORE || process.env.ignore || '')
           .split('\n')
           .filter((v) => v !== '');
-        //const ignorePatterns = (process.env.IGNORE_PATTERNS || '').split(',').filter((v) => Boolean(v.trim()));
+        const ignorePatterns = (process.env.IGNORE_PATTERNS || '').split(',').filter((v) => Boolean(v.trim()));
 
-        const ignorePatterns = ['github/', '.sh$'];
         const filesNames = files?.map((file) => file.filename) || [];
 
         log.info('ignoreList:', ignoreList);
@@ -118,7 +117,7 @@ export const robot = (app: Probot) => {
             !ignoreList.includes(file.filename) &&
             !ignorePatterns.some(pattern => new RegExp(pattern).test(file.filename))
         );
-      }
+      //}
 
       if (!changedFiles?.length) {
         log.info('no change found');
