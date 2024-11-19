@@ -84,9 +84,9 @@ export const robot = (app: Probot) => {
 
       let { files: changedFiles, commits } = data.data;
 
-      log.debug("compareCommits, base:", context.payload.pull_request.base.sha, "head:", context.payload.pull_request.head.sha)
-      log.debug("compareCommits.commits:", commits)
-      log.debug("compareCommits.files", changedFiles)
+      log.info("compareCommits, base:", context.payload.pull_request.base.sha, "head:", context.payload.pull_request.head.sha)
+      log.info("compareCommits.commits:", commits)
+      log.info("compareCommits.files", changedFiles)
 
       if (context.payload.action === 'synchronize' && commits.length >= 2) {
         const {
