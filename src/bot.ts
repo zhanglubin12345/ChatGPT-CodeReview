@@ -86,11 +86,31 @@ export const robot = (app: Probot) => {
 
       log.debug("compareCommits, base:", context.payload.pull_request.base.sha, "head:", context.payload.pull_request.head.sha)
       log.debug("compareCommits.commits:", commits)
-      log.debug("compareCommits.files", changedFiles)
-      log.info("context.payload.action", context.payload.action)
-      log.info("commits.length", commits.length)
+      log.info("compareCommits.files", changedFiles)
+      log.info("process.env.FILTER", process.env.FILTER)
+      if(process.env.FILTER){
+        const filter = JSON.parse(process.env.FILTER);
+        changedFiles = changedFiles?.filter(file => {
+          for (let i = 0; i < filter.length; i++) {
+            const f = filter[i];
+            const pathPattern = new RegExp(f.PATH_PATTERN);
+            if(!pathPattern.test(file.filename)){
+              continue;
+            }
+            if(f.IGNORE_PATTERNS){
+              const ignorePatterns: string[] = f.IGNORE_PATTERNS.split(',');
+              if(ignorePatterns.some(pattern => new RegExp(pattern).test(file.filename))){
+                return false;
+              }
+            }
+            return true;
+          }
+          return false;
+        });
+        log.info("compareCommits.files2", changedFiles)
+      }
 
-      //if (context.payload.action === 'synchronize' && commits.length >= 1) {
+      if (context.payload.action === 'synchronize' && commits.length >= 2) {
         const {
           data: { files },
         } = await context.octokit.repos.compareCommits({
@@ -103,21 +123,15 @@ export const robot = (app: Probot) => {
         const ignoreList = (process.env.IGNORE || process.env.ignore || '')
           .split('\n')
           .filter((v) => v !== '');
-        const ignorePatterns = (process.env.IGNORE_PATTERNS || '').split(',').filter((v) => Boolean(v.trim()));
-
         const filesNames = files?.map((file) => file.filename) || [];
 
-        log.info('ignoreList:', ignoreList);
-        log.info('ignorePatterns:', ignorePatterns);
-        log.info('filesNames:', filesNames);
+        log.debug('ignoreList:', ignoreList);
+        log.debug('filesNames:', filesNames);
 
         changedFiles = changedFiles?.filter(
-          (file) =>
-            filesNames.includes(file.filename) &&
-            !ignoreList.includes(file.filename) &&
-            !ignorePatterns.some(pattern => new RegExp(pattern).test(file.filename))
+          (file) => filesNames.includes(file.filename) && !ignoreList.includes(file.filename)
         );
-      //}
+      }
 
       if (!changedFiles?.length) {
         log.info('no change found');
