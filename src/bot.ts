@@ -106,9 +106,9 @@ export const robot = (app: Probot) => {
         const ignorePatterns = ['github/', '.sh$'];
         const filesNames = files?.map((file) => file.filename) || [];
 
-        console.log('ignorePatterns:' + JSON.stringify(ignorePatterns));
-        console.log('filesNames:' + JSON.stringify(filesNames));
-        console.log('changedFiles:' + JSON.stringify(changedFiles));
+        log.info('ignoreList:', ignoreList);
+        log.info('ignorePatterns:', ignorePatterns);
+        log.info('filesNames:', filesNames);
 
         changedFiles = changedFiles?.filter(
           (file) =>
@@ -116,7 +116,6 @@ export const robot = (app: Probot) => {
             !ignoreList.includes(file.filename) &&
             !ignorePatterns.some(pattern => new RegExp(pattern).test(file.filename))
         );
-        console.log('changedFiles2:' + JSON.stringify(changedFiles));
       }
 
       if (!changedFiles?.length) {
