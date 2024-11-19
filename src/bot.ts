@@ -101,7 +101,9 @@ export const robot = (app: Probot) => {
         const ignoreList = (process.env.IGNORE || process.env.ignore || '')
           .split('\n')
           .filter((v) => v !== '');
-        const ignorePatterns = (process.env.IGNORE_PATTERNS || '').split(',').filter((v) => Boolean(v.trim()));
+        //const ignorePatterns = (process.env.IGNORE_PATTERNS || '').split(',').filter((v) => Boolean(v.trim()));
+
+        const ignorePatterns = ['github/', '.sh$'];
         const filesNames = files?.map((file) => file.filename) || [];
 
         log.debug('ignoreList:', ignoreList);
