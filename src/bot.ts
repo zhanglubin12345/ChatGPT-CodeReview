@@ -88,6 +88,11 @@ export const robot = (app: Probot) => {
       log.debug("compareCommits.commits:", commits)
       log.info("compareCommits.files", changedFiles)
       log.info("process.env.FILTER", process.env.FILTER)
+      log.info("process.env.IGNORE_PATTERNS", process.env.IGNORE_PATTERNS)
+      if(process.env.IGNORE_PATTERNS){
+        const ignorePatterns: string[] = JSON.parse(process.env.IGNORE_PATTERNS);
+        changedFiles = changedFiles?.filter(file => !ignorePatterns.some(pattern => new RegExp(pattern).test(file.filename)));
+      }
       if(process.env.FILTER){
         const filter = JSON.parse(process.env.FILTER);
         changedFiles = changedFiles?.filter(file => {
